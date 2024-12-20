@@ -1,3 +1,4 @@
+import 'package:bingo_carvalho/widgets/bingo_grid.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -16,7 +17,22 @@ class BingoApp extends StatelessWidget {
   }
 }
 
-class BingoScreen extends StatelessWidget {
+class BingoScreen extends StatefulWidget {
+  @override
+  _BingoScreenState createState() => _BingoScreenState();
+}
+
+class _BingoScreenState extends State<BingoScreen> {
+  List<int> numbers = [];
+
+  void generateGrid() {
+    setState(() {
+      List<int> allNumbers = List.generate(75, (index) => index + 1);
+      allNumbers.shuffle(Random());
+      numbers = allNumbers.take(25).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +63,18 @@ class BingoScreen extends StatelessWidget {
             flex: 6,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: BingoGrid(),
+              child: numbers.isEmpty
+                  ? Center(
+                      child: Text(
+                        "Press the button to generate the grid",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  : BingoGrid(numbers: numbers),
             ),
           ),
           Expanded(
@@ -56,9 +83,7 @@ class BingoScreen extends StatelessWidget {
               color: Colors.purple.shade700,
               child: Center(
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Lógica do jogo
-                  },
+                  onPressed: generateGrid,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.pink.shade400,
                     shape: RoundedRectangleBorder(
@@ -69,7 +94,7 @@ class BingoScreen extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
                     child: Text(
-                      "Enter the game",
+                      "Generate Grid",
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
@@ -80,43 +105,6 @@ class BingoScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class BingoGrid extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    List<int> allNumbers = List.generate(75, (index) => index + 1);
-    allNumbers.shuffle(Random());
-    List<int> numbers = allNumbers.take(25).toList();
-
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 5,
-        mainAxisSpacing: 8.0,
-        crossAxisSpacing: 8.0,
-      ),
-      itemCount: numbers.length,
-      itemBuilder: (context, index) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.purple.shade900,
-            borderRadius: BorderRadius.circular(8.0),
-            border: Border.all(color: Colors.pink.shade300, width: 2),
-          ),
-          child: Center(
-            child: Text(
-              numbers[index].toString(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }
